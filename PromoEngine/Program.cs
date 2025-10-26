@@ -32,6 +32,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// test seeds - promo codes
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -44,6 +45,39 @@ using (var scope = app.Services.CreateScope())
             .ToList();
 
         db.PromoCodes.AddRange(codes);
+        db.SaveChanges();
+
+        Console.WriteLine("Seeded promo codes:");
+        foreach (var code in codes)
+            Console.WriteLine($" - {code.Code}");
+    }
+
+    if (!db.WinningTimestamps.Any())
+    {
+        var now = DateTime.UtcNow;
+
+// test seeds for daily 10 random winner timestaps
+        var dailyTimestamps = Enumerable.Range(1, 10)
+            .Select(i => new WinningTimestamp
+            {
+                TargetTime = now.AddDays(i).AddHours(new Random().Next(0, 23)).AddMinutes(new Random().Next(0, 59)),
+                Type = "Daily",
+                IsClaimed = false
+            })
+            .ToList();
+
+// test seeds for weekly 5 winner timestamps for 5 weeks
+        var weeklyTimestamps = Enumerable.Range(1, 5)
+            .Select(i => new WinningTimestamp
+            {
+                TargetTime = now.AddDays(i * 7).Date.AddHours(12).AddMinutes(new Random().Next(0, 59)),
+                Type = "Weekly",
+                IsClaimed = false
+            })
+            .ToList();
+
+        db.WinningTimestamps.AddRange(dailyTimestamps);
+        db.WinningTimestamps.AddRange(weeklyTimestamps);
         db.SaveChanges();
     }
 }

@@ -90,11 +90,60 @@ public class SubmissionService
 
         await _context.SaveChangesAsync();
 
+        var (isWinner, prizeType) = await CheckIfWinnerAsync(submission);
+
+        if (isWinner)
+        {
+            submission.IsWinner = true;
+            submission.PrizeType = prizeType;
+            await _context.SaveChangesAsync();
+        }
+
         return new SubmissionResponseDto
         {
             Success = true,
-            Message = "Submission successful.",
-            IsWinner = false
+            Message = isWinner ? "Congratulations! You are a winner!" : "Submission successful.",
+            IsWinner = isWinner,
+            PrizeType = prizeType
         };
+    }
+
+    private async Task<(bool IsWinner, string? PrizeType)> CheckIfWinnerAsync(Submission submission)
+    {
+        bool alreadyWinner = await _context.Submissions
+            .AnyAsync(s => s.HashedEmail == submission.HashedEmail && s.IsWinner);
+
+        if (alreadyWinner)
+        {
+            return (false, null);
+        }
+
+        var unclaimedTimestamps = await _context.WinningTimestamps
+            .Where(w => !w.IsClaimed)
+            .OrderBy(w => w.TargetTime)
+            .ToListAsync();
+
+        if (!unclaimedTimestamps.Any())
+        {
+            return (false, null);
+        }
+
+        var closest = unclaimedTimestamps
+            .Select(w => new
+            {
+                Timestamp = w,
+                Diff = Math.Abs((w.TargetTime - submission.SubmittedAt).TotalSeconds)
+            })
+            .OrderBy(x => x.Diff)
+            .First();
+
+        var winningTimestamp = closest.Timestamp;
+
+        winningTimestamp.IsClaimed = true;
+        winningTimestamp.WinnerSubmissionId = submission.Id;
+
+        await _context.SaveChangesAsync();
+
+        return (true, winningTimestamp.Type);
     }
 }
