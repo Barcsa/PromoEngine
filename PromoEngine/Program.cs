@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using PromoEngine.Data;
+using PromoEngine.Models;
 using PromoEngine.Services;
+using PromoEngine.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,5 +31,21 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.EnsureCreated();
+
+    if (!db.PromoCodes.Any())
+    {
+        var codes = PromoCodeGenerator.GenerateUniqueCodes(10)
+            .Select(c => new PromoCode { Code = c })
+            .ToList();
+
+        db.PromoCodes.AddRange(codes);
+        db.SaveChanges();
+    }
+}
 
 app.Run();
