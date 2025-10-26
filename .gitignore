@@ -363,3 +363,9 @@ MigrationBackup/
 FodyWeavers.xsd
 /PromoEngine/PromoEngine.http
 /PromoEngine/promoengine.db
+
+promoengine-frontend/node_modules/
+promoengine-frontend/.env
+promoengine-frontend/.env.local
+promoengine-frontend/dist/
+promoengine-frontend/package-lock.json
