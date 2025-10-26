@@ -36,6 +36,12 @@ const SubmissionForm: React.FC = () => {
             return;
         }
 
+        if (!/\S+@\S+\.\S+/.test(formData.email)) {
+            setModalMessage("Az e-mail cím formátuma érvénytelen.");
+            setIsModalOpen(true);
+            return;
+        }
+
         if (!formData.acceptedGameRules || !formData.acceptedPrivacyPolicy) {
             setModalMessage("A beküldéshez el kell fogadnod a szabályzatokat!");
             setIsModalOpen(true);
@@ -61,6 +67,7 @@ const SubmissionForm: React.FC = () => {
         <div className="min-h-screen bg-[#1b2a3a] flex items-center justify-center px-4">
             <form
                 onSubmit={handleSubmit}
+                noValidate
                 className="bg-[#22384d] p-8 rounded-xl shadow-2xl w-full max-w-2xl text-white"
             >
                 <h1 className="text-3xl font-bold mb-2 text-center">KÓDFELTÖLTÉS</h1>

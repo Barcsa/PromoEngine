@@ -25,7 +25,7 @@ public class SubmissionService
             return new SubmissionResponseDto
             {
                 Success = false,
-                Message = "All fields are required."
+                Message = "Kérlek, töltsd ki az összes kötelező mezőt!"
             };
         }
 
@@ -34,7 +34,7 @@ public class SubmissionService
             return new SubmissionResponseDto
             {
                 Success = false,
-                Message = "You must accept the required policies."
+                Message = "A beküldéshez el kell fogadnod a szabályzatokat!"
             };
         }
 
@@ -43,7 +43,7 @@ public class SubmissionService
             return new SubmissionResponseDto
             {
                 Success = false,
-                Message = "Invalid email format."
+                Message = "Az e-mail cím formátuma érvénytelen."
             };
         }
 
@@ -55,7 +55,7 @@ public class SubmissionService
             return new SubmissionResponseDto
             {
                 Success = false,
-                Message = "Invalid promo code."
+                Message = "A megadott promóciós kód érvénytelen."
             };
         }
 
@@ -64,7 +64,7 @@ public class SubmissionService
             return new SubmissionResponseDto
             {
                 Success = false,
-                Message = "This promo code has already been used."
+                Message = "Ezt a promóciós kódot már felhasználták."
             };
         }
 
@@ -102,7 +102,9 @@ public class SubmissionService
         return new SubmissionResponseDto
         {
             Success = true,
-            Message = isWinner ? "Congratulations! You are a winner!" : "Submission successful.",
+            Message = isWinner
+                ? "Nyertél, Bajnok! Megnyerted a napi nyereményt!"
+                : "A kód sikeresen beküldve.",
             IsWinner = isWinner,
             PrizeType = prizeType
         };
