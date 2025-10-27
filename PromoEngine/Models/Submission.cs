@@ -7,6 +7,7 @@ public class Submission
     public string HashedFirstName { get; set; } = string.Empty;
     public string HashedLastName { get; set; } = string.Empty;
     public string HashedEmail { get; set; } = string.Empty;
+    public string HashedPhoneNumber { get; set; } = string.Empty;
 
     public int PromoCodeId { get; set; }
     public PromoCode PromoCode { get; set; } = null!;

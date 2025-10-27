@@ -71,12 +71,14 @@ public class SubmissionService
         var hashedFirst = Hasher.HashString(dto.FirstName);
         var hashedLast = Hasher.HashString(dto.LastName);
         var hashedEmail = Hasher.HashString(dto.Email);
+        var hashedPhone = Hasher.HashString(dto.PhoneNumber);
 
         var submission = new Submission
         {
             HashedFirstName = hashedFirst,
             HashedLastName = hashedLast,
             HashedEmail = hashedEmail,
+            HashedPhoneNumber = hashedPhone,
             PromoCodeId = code.Id,
             AcceptedPrivacyPolicy = dto.AcceptedPrivacyPolicy,
             AcceptedGameRules = dto.AcceptedGameRules,
