@@ -164,6 +164,7 @@ const SubmissionForm: React.FC = () => {
                             label="Email cím megerősítése*"
                             name="confirmEmail"
                             type="email"
+                            autoComplete="new-email"
                             value={formData.confirmEmail}
                             onChange={handleChange}
                             error={errors.confirmEmail}

@@ -7,6 +7,7 @@ interface FormInputProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error?: string;
+  autoComplete?: string;
 }
 
 const FormInput: React.FC<FormInputProps> = ({
@@ -16,6 +17,7 @@ const FormInput: React.FC<FormInputProps> = ({
   value,
   onChange,
   error,
+  autoComplete
 }) => (
   <div className="flex flex-col mb-4">
     <label htmlFor={name} className="text-sm mb-1">
@@ -27,6 +29,7 @@ const FormInput: React.FC<FormInputProps> = ({
       type={type}
       value={value}
       onChange={onChange}
+      autoComplete={autoComplete}
       className={`w-full px-3 py-2 rounded-md bg-gray-800 text-white focus:outline-none focus:ring-2 ${
         error
           ? "border border-red-500 focus:ring-red-500"
