@@ -118,19 +118,19 @@ const SubmissionForm: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen flex flex-col bg-[#1b2a3a]">
-            <div className="flex-grow flex items-center justify-center px-4">
+        <div className="min-h-screen flex flex-col bg-[#1b2a3a] text-white">
+            <div className="flex-grow flex justify-center items-center md:items-start md:pt-16 lg:pt-24">
                 <form
                     onSubmit={handleSubmit}
                     noValidate
-                    className="bg-[#22384d] p-8 rounded-xl shadow-2xl w-full max-w-2xl text-white"
+                    className="bg-[#22384d] w-full h-full p-6 md:p-10 md:rounded-xl md:shadow-2xl md:max-w-6xl text-white mx-auto"
                 >
-                    <h1 className="text-3xl font-bold mb-2 text-center">KÓDFELTÖLTÉS</h1>
-                    <p className="text-center text-gray-300 mb-8">
+                    <h1 className="text-2xl md:text-4xl font-extrabold mb-2 text-center tracking-wide">KÓDFELTÖLTÉS</h1>
+                    <p className="text-center text-gray-300 mb-6 md:mb-10 text-sm md:text-base">
                         Add meg az adataidat, és töltsd fel a csomagoláson található kódot!
                     </p>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                         <FormInput
                             label="Vezetéknév*"
                             name="lastName"
@@ -224,7 +224,7 @@ const SubmissionForm: React.FC = () => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className={`w-full mt-6 py-3 rounded-md font-semibold transition ${loading
+                        className={`w-full md:w-auto md:px-10 mt-6 py-3 rounded-md font-semibold transition mx-auto ${loading
                             ? "bg-gray-500 cursor-not-allowed"
                             : "bg-indigo-500 hover:bg-indigo-600"
                             }`}
@@ -239,7 +239,7 @@ const SubmissionForm: React.FC = () => {
                 message={modalMessage}
                 onClose={() => setIsModalOpen(false)}
             />
-            <footer className="w-full bg-[#14212e] py-6 mt-10 text-right pr-10 text-[15px] tracking-wide font-semibold text-gray-200 border-t border-[#1e2f41]">
+            <footer className="w-full bg-[#14212e] py-6 text-center md:text-right px-4 md:px-10 text-[14px] md:text-[15px] tracking-wide font-semibold text-gray-300 border-t border-[#1e2f41] flex flex-col md:flex-row md:justify-end md:items-center gap-3 md:gap-6">
                 <a href="#" className="hover:text-white ml-6 transition-colors">Játékszabályzat</a>
                 <a href="#" className="hover:text-white ml-6 transition-colors">Adatvédelmi szabályzat</a>
                 <a href="#" className="hover:text-white ml-6 transition-colors">Cookie irányelvek</a>
