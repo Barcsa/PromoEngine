@@ -3,13 +3,15 @@ import FormInput from "../components/FormInput";
 import Checkbox from "../components/Checkbox";
 import Modal from "../components/Modal";
 import { submitPromoCode } from "../api/submissionApi";
-import { SubmissionRequest } from "../types/submission";
+import { SubmissionFormData, SubmissionRequest } from "../types/submission";
 
 const SubmissionForm: React.FC = () => {
-    const [formData, setFormData] = useState<SubmissionRequest>({
+    const [formData, setFormData] = useState<SubmissionFormData>({
         firstName: "",
         lastName: "",
         email: "",
+        confirmEmail: "",
+        phoneNumber: "",
         promoCode: "",
         acceptedPrivacyPolicy: false,
         acceptedGameRules: false,
@@ -30,14 +32,26 @@ const SubmissionForm: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!formData.firstName || !formData.lastName || !formData.email || !formData.promoCode) {
+        if (!formData.firstName || !formData.lastName || !formData.email || !formData.promoCode || !formData.confirmEmail || !formData.phoneNumber) {
             setModalMessage("Kérlek, töltsd ki az összes kötelező mezőt!");
+            setIsModalOpen(true);
+            return;
+        }
+
+        if (formData.email !== formData.confirmEmail) {
+            setModalMessage("Az e-mail címek nem egyeznek!");
             setIsModalOpen(true);
             return;
         }
 
         if (!/\S+@\S+\.\S+/.test(formData.email)) {
             setModalMessage("Az e-mail cím formátuma érvénytelen.");
+            setIsModalOpen(true);
+            return;
+        }
+
+        if (!/^\+?[0-9\s\-]{7,15}$/.test(formData.phoneNumber)) {
+            setModalMessage("A telefonszám formátuma érvénytelen.");
             setIsModalOpen(true);
             return;
         }
@@ -50,8 +64,22 @@ const SubmissionForm: React.FC = () => {
 
         setLoading(true);
         try {
-            const result = await submitPromoCode(formData);
+            const { confirmEmail, ...payload } = formData;
+            const result = await submitPromoCode(payload);
             setModalMessage(result.message);
+
+            if (result.success) {
+                setFormData({
+                    firstName: "",
+                    lastName: "",
+                    email: "",
+                    confirmEmail: "",
+                    phoneNumber: "",
+                    promoCode: "",
+                    acceptedPrivacyPolicy: false,
+                    acceptedGameRules: false,
+                });
+            }
         } catch {
             setModalMessage("Hiba történt a beküldés során. Próbáld újra!");
         } finally {
@@ -89,10 +117,23 @@ const SubmissionForm: React.FC = () => {
                         onChange={handleChange}
                     />
                     <FormInput
+                        label="Telefonszám*"
+                        name="phoneNumber"
+                        value={formData.phoneNumber}
+                        onChange={handleChange}
+                    />
+                    <FormInput
                         label="Email cím*"
                         name="email"
                         type="email"
                         value={formData.email}
+                        onChange={handleChange}
+                    />
+                    <FormInput
+                        label="Email cím megerősítése*"
+                        name="confirmEmail"
+                        type="email"
+                        value={formData.confirmEmail}
                         onChange={handleChange}
                     />
                     <FormInput
