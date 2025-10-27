@@ -3,7 +3,7 @@ import FormInput from "../components/FormInput";
 import Checkbox from "../components/Checkbox";
 import Modal from "../components/Modal";
 import { submitPromoCode } from "../api/submissionApi";
-import { SubmissionFormData, SubmissionRequest } from "../types/submission";
+import { SubmissionFormData } from "../types/submission";
 
 const SubmissionForm: React.FC = () => {
     const [formData, setFormData] = useState<SubmissionFormData>({
@@ -17,6 +17,7 @@ const SubmissionForm: React.FC = () => {
         acceptedGameRules: false,
     });
 
+    const [errors, setErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
     const [modalMessage, setModalMessage] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,38 +28,63 @@ const SubmissionForm: React.FC = () => {
             ...prev,
             [name]: type === "checkbox" ? checked : value,
         }));
+
+        const updatedErrors = { ...errors };
+        updatedErrors[name] = "";
+        setErrors(updatedErrors);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        const newErrors: Record<string, string> = {};
 
-        if (!formData.firstName || !formData.lastName || !formData.email || !formData.promoCode || !formData.confirmEmail || !formData.phoneNumber) {
-            setModalMessage("Kérlek, töltsd ki az összes kötelező mezőt!");
-            setIsModalOpen(true);
-            return;
+        if (!formData.firstName) {
+            newErrors.firstName = "Kérlek, add meg a keresztnevedet.";
         }
 
-        if (formData.email !== formData.confirmEmail) {
-            setModalMessage("Az e-mail címek nem egyeznek!");
-            setIsModalOpen(true);
-            return;
+        if (!formData.lastName) {
+            newErrors.lastName = "Kérlek, add meg a vezetéknevedet.";
         }
 
-        if (!/\S+@\S+\.\S+/.test(formData.email)) {
-            setModalMessage("Az e-mail cím formátuma érvénytelen.");
-            setIsModalOpen(true);
-            return;
+        if (!formData.email) {
+            newErrors.email = "Add meg az e-mail címedet.";
         }
 
-        if (!/^\+?[0-9\s\-]{7,15}$/.test(formData.phoneNumber)) {
-            setModalMessage("A telefonszám formátuma érvénytelen.");
-            setIsModalOpen(true);
-            return;
+        if (!formData.confirmEmail) {
+            newErrors.confirmEmail = "Erősítsd meg az e-mail címedet.";
         }
 
-        if (!formData.acceptedGameRules || !formData.acceptedPrivacyPolicy) {
-            setModalMessage("A beküldéshez el kell fogadnod a szabályzatokat!");
-            setIsModalOpen(true);
+        if (!formData.phoneNumber) {
+            newErrors.phoneNumber = "Add meg a telefonszámodat.";
+        }
+
+        if (!formData.promoCode) {
+            newErrors.promoCode = "Add meg a promóciós kódot.";
+        }
+
+        if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
+            newErrors.email = "Az e-mail cím formátuma nem megfelelő.";
+        }
+
+        if (formData.email && formData.confirmEmail && formData.email !== formData.confirmEmail) {
+            newErrors.confirmEmail = "A két e-mail cím nem egyezik.";
+        }
+
+        if (formData.phoneNumber && !/^\+?[0-9\s\-]{7,15}$/.test(formData.phoneNumber)) {
+            newErrors.phoneNumber = "A megadott telefonszám formátuma nem érvényes.";
+        }
+
+        if (!formData.acceptedGameRules) {
+            newErrors.acceptedGameRules = "A játékszabályzat elfogadása kötelező.";
+        }
+
+        if (!formData.acceptedPrivacyPolicy) {
+            newErrors.acceptedPrivacyPolicy = "Az adatvédelmi szabályzat elfogadása kötelező.";
+        }
+
+        const hasErrors = JSON.stringify(newErrors) !== "{}";
+        if (hasErrors) {
+            setErrors(newErrors);
             return;
         }
 
@@ -109,18 +135,21 @@ const SubmissionForm: React.FC = () => {
                         name="lastName"
                         value={formData.lastName}
                         onChange={handleChange}
+                        error={errors.lastName}
                     />
                     <FormInput
                         label="Keresztnév*"
                         name="firstName"
                         value={formData.firstName}
                         onChange={handleChange}
+                        error={errors.firstName}
                     />
                     <FormInput
                         label="Telefonszám*"
                         name="phoneNumber"
                         value={formData.phoneNumber}
                         onChange={handleChange}
+                        error={errors.phoneNumber}
                     />
                     <FormInput
                         label="Email cím*"
@@ -128,6 +157,7 @@ const SubmissionForm: React.FC = () => {
                         type="email"
                         value={formData.email}
                         onChange={handleChange}
+                        error={errors.email}
                     />
                     <FormInput
                         label="Email cím megerősítése*"
@@ -135,42 +165,55 @@ const SubmissionForm: React.FC = () => {
                         type="email"
                         value={formData.confirmEmail}
                         onChange={handleChange}
+                        error={errors.confirmEmail}
                     />
                     <FormInput
                         label="Promóciós kód*"
                         name="promoCode"
                         value={formData.promoCode}
                         onChange={handleChange}
+                        error={errors.promoCode}
                     />
                 </div>
 
                 <div className="mt-6 space-y-3">
-                    <Checkbox
-                        label={
-                            <>
-                                Elfogadom a{" "}
-                                <a href="#" className="underline hover:text-indigo-400">
-                                    játékszabályzatot
-                                </a>
-                            </>
-                        }
-                        name="acceptedGameRules"
-                        checked={formData.acceptedGameRules}
-                        onChange={handleChange}
-                    />
-                    <Checkbox
-                        label={
-                            <>
-                                Elfogadom az{" "}
-                                <a href="#" className="underline hover:text-indigo-400">
-                                    adatvédelmi szabályzatot
-                                </a>
-                            </>
-                        }
-                        name="acceptedPrivacyPolicy"
-                        checked={formData.acceptedPrivacyPolicy}
-                        onChange={handleChange}
-                    />
+                    <div>
+                        <Checkbox
+                            label={
+                                <>
+                                    Elfogadom a{" "}
+                                    <a href="#" className="underline hover:text-indigo-400">
+                                        játékszabályzatot
+                                    </a>
+                                </>
+                            }
+                            name="acceptedGameRules"
+                            checked={formData.acceptedGameRules}
+                            onChange={handleChange}
+                        />
+                        {errors.acceptedGameRules && (
+                            <p className="text-red-400 text-sm mt-1">{errors.acceptedGameRules}</p>
+                        )}
+                    </div>
+
+                    <div>
+                        <Checkbox
+                            label={
+                                <>
+                                    Elfogadom az{" "}
+                                    <a href="#" className="underline hover:text-indigo-400">
+                                        adatvédelmi szabályzatot
+                                    </a>
+                                </>
+                            }
+                            name="acceptedPrivacyPolicy"
+                            checked={formData.acceptedPrivacyPolicy}
+                            onChange={handleChange}
+                        />
+                        {errors.acceptedPrivacyPolicy && (
+                            <p className="text-red-400 text-sm mt-1">{errors.acceptedPrivacyPolicy}</p>
+                        )}
+                    </div>
                 </div>
 
                 <p className="text-sm text-gray-400 mt-4">

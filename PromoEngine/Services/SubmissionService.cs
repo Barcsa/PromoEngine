@@ -1,8 +1,9 @@
-﻿using PromoEngine.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using PromoEngine.Data;
 using PromoEngine.DTOs;
 using PromoEngine.Models;
 using PromoEngine.Utils;
-using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 
 namespace PromoEngine.Services;
 
@@ -17,36 +18,86 @@ public class SubmissionService
 
     public async Task<SubmissionResponseDto> ProcessSubmissionAsync(SubmissionRequestDto dto)
     {
-        if (string.IsNullOrWhiteSpace(dto.FirstName) ||
-            string.IsNullOrWhiteSpace(dto.LastName) ||
-            string.IsNullOrWhiteSpace(dto.Email) ||
-            string.IsNullOrWhiteSpace(dto.PromoCode))
+        if (string.IsNullOrWhiteSpace(dto.FirstName))
         {
             return new SubmissionResponseDto
             {
                 Success = false,
-                Message = "Kérlek, töltsd ki az összes kötelező mezőt!"
+                Message = "Kérlek, add meg a keresztnevedet."
             };
         }
 
-        if (!dto.AcceptedPrivacyPolicy || !dto.AcceptedGameRules)
+        if (string.IsNullOrWhiteSpace(dto.LastName))
         {
             return new SubmissionResponseDto
             {
                 Success = false,
-                Message = "A beküldéshez el kell fogadnod a szabályzatokat!"
+                Message = "Kérlek, add meg a vezetéknevedet."
             };
         }
 
-        if (!dto.Email.Contains("@") || !dto.Email.Contains("."))
+        if (string.IsNullOrWhiteSpace(dto.Email))
         {
             return new SubmissionResponseDto
             {
                 Success = false,
-                Message = "Az e-mail cím formátuma érvénytelen."
+                Message = "Add meg az e-mail címedet."
             };
         }
 
+        if (string.IsNullOrWhiteSpace(dto.PhoneNumber))
+        {
+            return new SubmissionResponseDto
+            {
+                Success = false,
+                Message = "Add meg a telefonszámodat."
+            };
+        }
+
+        if (string.IsNullOrWhiteSpace(dto.PromoCode))
+        {
+            return new SubmissionResponseDto
+            {
+                Success = false,
+                Message = "Add meg a promóciós kódot."
+            };
+        }
+
+        if (!Regex.IsMatch(dto.Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+        {
+            return new SubmissionResponseDto
+            {
+                Success = false,
+                Message = "Az e-mail cím formátuma nem megfelelő."
+            };
+        }
+
+        if (!Regex.IsMatch(dto.PhoneNumber, @"^\+?[0-9\s\-]{7,15}$"))
+        {
+            return new SubmissionResponseDto
+            {
+                Success = false,
+                Message = "A megadott telefonszám formátuma nem érvényes."
+            };
+        }
+
+        if (!dto.AcceptedGameRules)
+        {
+            return new SubmissionResponseDto
+            {
+                Success = false,
+                Message = "A játékszabályzat elfogadása kötelező."
+            };
+        }
+
+        if (!dto.AcceptedPrivacyPolicy)
+        {
+            return new SubmissionResponseDto
+            {
+                Success = false,
+                Message = "Az adatvédelmi szabályzat elfogadása kötelező."
+            };
+        }
         var code = await _context.PromoCodes
             .FirstOrDefaultAsync(p => p.Code == dto.PromoCode.ToUpper());
 
