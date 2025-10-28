@@ -20,7 +20,9 @@ const SubmissionForm: React.FC = () => {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [loading, setLoading] = useState(false);
     const [modalMessage, setModalMessage] = useState("");
+    const [modalSuccess, setModalSuccess] = useState<boolean | undefined>(undefined);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalIsWinner, setModalIsWinner] = useState<boolean | undefined>(undefined);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         const { name, value, type, checked } = e.target;
@@ -93,6 +95,8 @@ const SubmissionForm: React.FC = () => {
             const { confirmEmail, ...payload } = formData;
             const result = await submitPromoCode(payload);
             setModalMessage(result.message);
+            setModalSuccess(result.success);
+            setModalIsWinner(result.isWinner);
 
             if (result.success) {
                 setFormData({
@@ -108,6 +112,7 @@ const SubmissionForm: React.FC = () => {
             }
         } catch {
             setModalMessage("Hiba történt a beküldés során. Próbáld újra!");
+            setModalSuccess(false);
         } finally {
             setLoading(false);
             setIsModalOpen(true);
@@ -301,6 +306,8 @@ const SubmissionForm: React.FC = () => {
             <Modal
                 isOpen={isModalOpen}
                 message={modalMessage}
+                success={modalSuccess}
+                isWinner={modalIsWinner}
                 onClose={() => setIsModalOpen(false)}
             />
         </div>
