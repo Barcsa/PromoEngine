@@ -157,7 +157,7 @@ public class SubmissionService
             Success = true,
             Message = isWinner
                 ? "Nyertél, Bajnok! Megnyerted a napi nyereményt!"
-                : "A kód sikeresen beküldve.",
+                : "Most nem volt szerencséd, Bajnok! A nagy győzelemhez sok küzdelem kell. Próbáld újra!",
             IsWinner = isWinner,
             PrizeType = prizeType
         };
