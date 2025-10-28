@@ -118,14 +118,25 @@ const SubmissionForm: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen flex flex-col bg-[#1b2a3a] text-white">
-            <div className="flex-grow flex justify-center items-center md:items-start md:pt-16 lg:pt-24">
+        <div className="relative z-0 min-h-screen flex flex-col text-white bg-gradient-to-b from-[#1c3b52] to-[#2d5b78] md:from-[#0e2a3b] md:to-[#1b4054] overflow-hidden">
+            <div className="h-8 bg-[#0b2230] border-b-4 border-[#4da0db]" />
+
+            <svg className="absolute top-0 left-0 w-full" viewBox="0 0 1440 280">
+                <path
+                    fill="#0e2a3b"
+                    d="M0,192L80,213.3C160,235,320,277,480,272C640,267,800,213,960,186.7C1120,160,1280,160,1360,160L1440,160L1440,0L0,0Z"
+                ></path>
+            </svg>
+
+            <div className="flex-grow flex justify-center items-center md:items-start md:pt-16 lg:pt-24 px-4 md:px-10 z-10">
                 <form
                     onSubmit={handleSubmit}
                     noValidate
-                    className="bg-[#22384d] w-full h-full p-6 md:p-10 md:rounded-xl md:shadow-2xl md:max-w-6xl text-white mx-auto"
+                    className="relative z-10 w-full text-white mx-auto p-4 md:p-10 bg-transparent md:bg-[#1f3b52]/90 md:backdrop-blur-sm md:rounded-3xl md:border md:border-[#3d556a] md:max-w-6xl"
                 >
-                    <h1 className="text-2xl md:text-4xl font-extrabold mb-2 text-center tracking-wide">KÓDFELTÖLTÉS</h1>
+                    <h1 className="text-2xl md:text-5xl font-extrabold mb-2 text-center tracking-wide text-[#b8dcf5]">
+                        KÓDFELTÖLTÉS
+                    </h1>
                     <p className="text-center text-gray-300 mb-6 md:mb-10 text-sm md:text-base">
                         Add meg az adataidat, és töltsd fel a csomagoláson található kódot!
                     </p>
@@ -194,7 +205,9 @@ const SubmissionForm: React.FC = () => {
                                 onChange={handleChange}
                             />
                             {errors.acceptedGameRules && (
-                                <p className="text-red-400 text-sm mt-1">{errors.acceptedGameRules}</p>
+                                <p className="text-red-400 text-sm mt-1">
+                                    {errors.acceptedGameRules}
+                                </p>
                             )}
                         </div>
 
@@ -213,7 +226,9 @@ const SubmissionForm: React.FC = () => {
                                 onChange={handleChange}
                             />
                             {errors.acceptedPrivacyPolicy && (
-                                <p className="text-red-400 text-sm mt-1">{errors.acceptedPrivacyPolicy}</p>
+                                <p className="text-red-400 text-sm mt-1">
+                                    {errors.acceptedPrivacyPolicy}
+                                </p>
                             )}
                         </div>
                     </div>
@@ -222,32 +237,73 @@ const SubmissionForm: React.FC = () => {
                         Több kód feltöltésével növelheted nyerési esélyeidet.
                     </p>
 
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className={`w-full md:w-auto md:px-10 mt-6 py-3 rounded-md font-semibold transition mx-auto ${loading
-                            ? "bg-gray-500 cursor-not-allowed"
-                            : "bg-indigo-500 hover:bg-indigo-600"
-                            }`}
-                    >
-                        {loading ? "Feltöltés..." : "Feltöltöm a kódot"}
-                    </button>
+                    <div className="flex justify-center mt-8">
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className={`w-full md:w-auto md:px-10 py-3 rounded-full font-semibold transition shadow-md ${loading
+                                ? "bg-gray-500 cursor-not-allowed"
+                                : "bg-[#4da0db] hover:bg-[#63b4eb]"
+                                } text-[#0e2a3b]`}
+                        >
+                            {loading ? "Feltöltés..." : "FELTÖLTÖM A KÓDOT"}
+                        </button>
+                    </div>
                 </form>
             </div>
+
+            <svg
+                className="hidden md:block absolute bottom-32 right-0 w-full md:w-[90%] opacity-50 pointer-events-none z-0"
+                viewBox="0 0 1200 200"
+            >
+                <path
+                    d="M1440,240 C1150,180 900,120 600,180 C300,240 150,140 0,160"
+                    fill="none"
+                    stroke="#b8dcf5"
+                    strokeWidth="2"
+                    strokeDasharray="6 10"
+                    strokeLinecap="round"
+                >
+
+                </path>
+            </svg>
+
+
+            <img
+                src="/airplane-svgrepo-com.svg"
+                alt=""
+                className="hidden md:block absolute top-[690px] left-[90px] md:bottom-[90px] md:right-[280px] w-[90px] md:w-[120px] opacity-80 rotate-[10deg] z-[0]"
+            />
+
+            <svg className="absolute bottom-0 left-0 w-full">
+                <path
+                    fill="#4da0db"
+                    d="M0,288L80,288C160,288,320,288,480,272C640,256,800,224,960,224C1120,224,1280,256,1360,272L1440,288L1440,320L0,320Z"
+                ></path>
+            </svg>
+
+
+            <footer className="w-full bg-[#0f2b3a] py-6 text-[#c8e3f6] text-center font-semibold z-10 flex flex-col md:flex-row md:justify-center gap-3 md:gap-6">
+                <a href="#" className="hover:underline">
+                    JÁTÉKSZABÁLYZAT
+                </a>
+                <a href="#" className="hover:underline">
+                    ADATVÉDELMI SZABÁLYZAT
+                </a>
+                <a href="#" className="hover:underline">
+                    COOKIE IRÁNYELVEK
+                </a>
+                <a href="#" className="hover:underline">
+                    KAPCSOLAT
+                </a>
+            </footer>
 
             <Modal
                 isOpen={isModalOpen}
                 message={modalMessage}
                 onClose={() => setIsModalOpen(false)}
             />
-            <footer className="w-full bg-[#14212e] py-6 text-center md:text-right px-4 md:px-10 text-[14px] md:text-[15px] tracking-wide font-semibold text-gray-300 border-t border-[#1e2f41] flex flex-col md:flex-row md:justify-end md:items-center gap-3 md:gap-6">
-                <a href="#" className="hover:text-white ml-6 transition-colors">Játékszabályzat</a>
-                <a href="#" className="hover:text-white ml-6 transition-colors">Adatvédelmi szabályzat</a>
-                <a href="#" className="hover:text-white ml-6 transition-colors">Cookie irányelvek</a>
-                <a href="#" className="hover:text-white ml-6 transition-colors">Kapcsolat</a>
-            </footer>
-
-        </div >
+        </div>
     );
 };
 
