@@ -1,19 +1,26 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PromoEngine.Data;
-using PromoEngine.DTOs;
+﻿using PromoEngine.DTOs;
 using PromoEngine.Models;
+using PromoEngine.Repositories.Interfaces;
+using PromoEngine.Services.Interfaces;
 using PromoEngine.Utils;
 using System.Text.RegularExpressions;
 
 namespace PromoEngine.Services;
 
-public class SubmissionService
+public class SubmissionService : ISubmissionService
 {
-    private readonly ApplicationDbContext _context;
+    private readonly IPromoCodeRepository _promoRepo;
+    private readonly ISubmissionRepository _submissionRepo;
+    private readonly IWinningTimestampRepository _timestampRepo;
 
-    public SubmissionService(ApplicationDbContext context)
+    public SubmissionService(
+        IPromoCodeRepository promoRepo,
+        ISubmissionRepository submissionRepo,
+        IWinningTimestampRepository timestampRepo)
     {
-        _context = context;
+        _promoRepo = promoRepo;
+        _submissionRepo = submissionRepo;
+        _timestampRepo = timestampRepo;
     }
 
     public async Task<SubmissionResponseDto> ProcessSubmissionAsync(SubmissionRequestDto dto)
@@ -98,9 +105,8 @@ public class SubmissionService
                 Message = "Az adatvédelmi szabályzat elfogadása kötelező."
             };
         }
-        var code = await _context.PromoCodes
-            .FirstOrDefaultAsync(p => p.Code == dto.PromoCode.ToUpper());
 
+        var code = await _promoRepo.GetByCodeAsync(dto.PromoCode);
         if (code == null)
         {
             return new SubmissionResponseDto
@@ -136,12 +142,13 @@ public class SubmissionService
             SubmittedAt = DateTime.UtcNow
         };
 
-        _context.Submissions.Add(submission);
+        await _submissionRepo.AddAsync(submission);
 
         code.IsUsed = true;
         code.UsedAt = DateTime.UtcNow;
 
-        await _context.SaveChangesAsync();
+        await _promoRepo.SaveChangesAsync();
+        await _submissionRepo.SaveChangesAsync();
 
         var (isWinner, prizeType) = await CheckIfWinnerAsync(submission);
 
@@ -149,7 +156,7 @@ public class SubmissionService
         {
             submission.IsWinner = true;
             submission.PrizeType = prizeType;
-            await _context.SaveChangesAsync();
+            await _submissionRepo.SaveChangesAsync();
         }
 
         return new SubmissionResponseDto
@@ -165,24 +172,15 @@ public class SubmissionService
 
     private async Task<(bool IsWinner, string? PrizeType)> CheckIfWinnerAsync(Submission submission)
     {
-        bool alreadyWinner = await _context.Submissions
-            .AnyAsync(s => s.HashedEmail == submission.HashedEmail && s.IsWinner);
-
+        bool alreadyWinner = await _submissionRepo.HasAlreadyWonAsync(submission.HashedEmail);
         if (alreadyWinner)
-        {
             return (false, null);
-        }
 
-        var unclaimedTimestamps = await _context.WinningTimestamps
-            .Where(w => !w.IsClaimed)
-            .OrderBy(w => w.TargetTime)
-            .ToListAsync();
-
+        var unclaimedTimestamps = await _timestampRepo.GetUnclaimedAsync();
         if (!unclaimedTimestamps.Any())
-        {
+        { 
             return (false, null);
         }
-
         var closest = unclaimedTimestamps
             .Select(w => new
             {
@@ -197,7 +195,7 @@ public class SubmissionService
         winningTimestamp.IsClaimed = true;
         winningTimestamp.WinnerSubmissionId = submission.Id;
 
-        await _context.SaveChangesAsync();
+        await _timestampRepo.SaveChangesAsync();
 
         return (true, winningTimestamp.Type);
     }

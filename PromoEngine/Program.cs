@@ -1,7 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using PromoEngine.Data;
 using PromoEngine.Models;
+using PromoEngine.Repositories;
+using PromoEngine.Repositories.Interfaces;
 using PromoEngine.Services;
+using PromoEngine.Services.Interfaces;
 using PromoEngine.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,7 +31,10 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<SubmissionService>();
+builder.Services.AddScoped<ISubmissionService, SubmissionService>();
+builder.Services.AddScoped<IPromoCodeRepository, PromoCodeRepository>();
+builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
+builder.Services.AddScoped<IWinningTimestampRepository, WinningTimestampRepository>();
 
 var app = builder.Build();
 

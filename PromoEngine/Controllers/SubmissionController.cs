@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PromoEngine.DTOs;
 using PromoEngine.Services;
+using PromoEngine.Services.Interfaces;
 
 namespace PromoEngine.Controllers;
 
@@ -8,9 +9,9 @@ namespace PromoEngine.Controllers;
 [Route("api/[controller]")]
 public class SubmissionController : ControllerBase
 {
-    private readonly SubmissionService _submissionService;
+    private readonly ISubmissionService _submissionService;
 
-    public SubmissionController(SubmissionService submissionService)
+    public SubmissionController(ISubmissionService submissionService)
     {
         _submissionService = submissionService;
     }
