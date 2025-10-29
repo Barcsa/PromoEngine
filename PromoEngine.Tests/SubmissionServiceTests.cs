@@ -251,5 +251,49 @@ namespace PromoEngine.Tests
             Assert.Equal("Most nem volt szerencséd, Bajnok! A nagy győzelemhez sok küzdelem kell. Próbáld újra!", result.Message);
         }
 
+        [Fact]
+        public async Task ShouldReturnWeeklyWinner_When_WeeklyTimestampAvailable()
+        {
+            var promoRepo = new Mock<IPromoCodeRepository>();
+            var submissionRepo = new Mock<ISubmissionRepository>();
+            var timestampRepo = new Mock<IWinningTimestampRepository>();
+
+            var promo = new PromoCode { Id = 1, Code = "WEEKY", IsUsed = false };
+
+            promoRepo.Setup(r => r.GetByCodeAsync("WEEKY")).ReturnsAsync(promo);
+            submissionRepo.Setup(r => r.HasAlreadyWonAsync(It.IsAny<string>())).ReturnsAsync(false);
+            timestampRepo.Setup(r => r.GetUnclaimedAsync()).ReturnsAsync(
+            new List<WinningTimestamp>
+                {
+                    new WinningTimestamp
+                    {
+                        Id = 99,
+                        TargetTime = DateTime.UtcNow,
+                        Type = "Weekly",
+                        IsClaimed = false
+                    }
+                });
+
+            var service = new SubmissionService(promoRepo.Object, submissionRepo.Object, timestampRepo.Object);
+
+            var dto = new SubmissionRequestDto
+            {
+                FirstName = "Barcsa",
+                LastName = "Gergo",
+                Email = "barcsagergo@gmail.com",
+                PhoneNumber = "+40746862228",
+                PromoCode = "WEEKY",
+                AcceptedPrivacyPolicy = true,
+                AcceptedGameRules = true
+            };
+
+            var result = await service.ProcessSubmissionAsync(dto);
+
+            Assert.True(result.Success);
+            Assert.True(result.IsWinner);
+            Assert.Equal("Weekly", result.PrizeType);
+            Assert.Equal("Nyertél, Bajnok! Megnyerted a heti nyereményt!", result.Message);
+        }
+
     }
 }
