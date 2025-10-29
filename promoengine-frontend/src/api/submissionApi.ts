@@ -1,6 +1,6 @@
 import { SubmissionRequest, SubmissionResponse } from "../types/submission";
 
-const API_BASE_URL = "http://localhost:5299/api";
+const API_BASE_URL = "https://promoengine-backend-barcsadev.azurewebsites.net/api";
 
 export async function submitPromoCode(
     data: SubmissionRequest
