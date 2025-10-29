@@ -23,6 +23,7 @@ const SubmissionForm: React.FC = () => {
     const [modalSuccess, setModalSuccess] = useState<boolean | undefined>(undefined);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalIsWinner, setModalIsWinner] = useState<boolean | undefined>(undefined);
+    const [modalPrizeType, setModalPrizeType] = useState<string | undefined>(undefined);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         const { name, value, type, checked } = e.target;
@@ -97,6 +98,7 @@ const SubmissionForm: React.FC = () => {
             setModalMessage(result.message);
             setModalSuccess(result.success);
             setModalIsWinner(result.isWinner);
+            setModalPrizeType(result.prizeType ?? undefined);
 
             if (result.success) {
                 setFormData({
@@ -308,6 +310,7 @@ const SubmissionForm: React.FC = () => {
                 message={modalMessage}
                 success={modalSuccess}
                 isWinner={modalIsWinner}
+                prizeType={modalPrizeType}
                 onClose={() => setIsModalOpen(false)}
             />
         </div>

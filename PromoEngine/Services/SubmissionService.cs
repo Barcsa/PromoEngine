@@ -159,12 +159,22 @@ public class SubmissionService : ISubmissionService
             await _submissionRepo.SaveChangesAsync();
         }
 
+        string successMessage;
+        if (isWinner)
+        {
+            successMessage = prizeType == "Weekly"
+                ? "Nyertél, Bajnok! Megnyerted a heti nyereményt!"
+                : "Nyertél, Bajnok! Megnyerted a napi nyereményt!";
+        }
+        else
+        {
+            successMessage = "Most nem volt szerencséd, Bajnok! A nagy győzelemhez sok küzdelem kell. Próbáld újra!";
+        }
+
         return new SubmissionResponseDto
         {
             Success = true,
-            Message = isWinner
-                ? "Nyertél, Bajnok! Megnyerted a napi nyereményt!"
-                : "Most nem volt szerencséd, Bajnok! A nagy győzelemhez sok küzdelem kell. Próbáld újra!",
+            Message = successMessage,
             IsWinner = isWinner,
             PrizeType = prizeType
         };

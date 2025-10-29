@@ -5,10 +5,11 @@ interface ModalProps {
     message: string;
     onClose: () => void;
     success?: boolean;
+    prizeType?: string;
     isWinner?: boolean;
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, message, onClose, success, isWinner }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, message, onClose, success, isWinner, prizeType }) => {
     if (!isOpen) return null;
 
     const isError = success === false;
@@ -53,7 +54,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, message, onClose, success, isWinn
                                 Nyertél, Bajnok!
                             </span>
                             <span className="block text-green-50 text-base">
-                                Megnyerted a napi nyereményt!
+                                {prizeType === "Weekly"
+                                    ? "Megnyerted a heti nyereményt!"
+                                    : "Megnyerted a napi nyereményt!"}
                             </span>
                         </>
                     ) : !isWin && success && message.startsWith("Most nem volt szerencséd, Bajnok!") ? (
