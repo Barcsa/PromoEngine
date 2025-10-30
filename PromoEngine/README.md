@@ -2,14 +2,22 @@
 
 A simple web application built for Billy Bonka Chocolate Factory to let users submit promo codes found inside chocolate packaging and automatically enter daily or weekly prize draws.
 
+#Live URLs
+Frontend: https://promo-engine-barcsa.vercel.app/
+Backend: https://promoengine-backend-barcsadev.azurewebsites.net/swagger
+
 
 #Tech Stack
 
 Backend: .NET 8 (C#)
 Frontend: React with Tailwind CSS
-Database: MySQL (Entity Framework Core)
+Database: MySQL (Railway)
 Security: SHA256 hashing for personal data
 Architecture: Layered structure (Repository - Service - Controller) with interfaces
+Deployment: 
+	       Backend: Azure App Service
+		   Frontend: Vercel
+		   Database: Railway (MySQL)
 
 #How It Works
 
