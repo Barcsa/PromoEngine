@@ -68,7 +68,7 @@ using (var scope = app.Services.CreateScope())
 
     if (!db.PromoCodes.Any())
     {
-        var codes = PromoCodeGenerator.GenerateUniqueCodes(10)
+        var codes = PromoCodeGenerator.GenerateUniqueCodes(100)
             .Select(c => new PromoCode { Code = c })
             .ToList();
 
